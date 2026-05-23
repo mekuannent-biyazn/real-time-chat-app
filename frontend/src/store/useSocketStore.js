@@ -14,8 +14,11 @@ export const useSocketStore = create((set, get) => ({
     const { socket } = get();
     if (socket?.connected) return;
 
+    const token = localStorage.getItem("chat-token");
+
     const newSocket = io(SOCKET_URL, {
       query: { userId },
+      auth: { token },          // send JWT for socket auth
       transports: ["websocket"],
     });
 

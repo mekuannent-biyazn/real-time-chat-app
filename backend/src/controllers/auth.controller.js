@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import User from "../models/user.model.js";
-import { generateToken, clearToken } from "../lib/utils.js";
+import { generateToken } from "../lib/utils.js";
 import cloudinary from "../lib/cloudinary.js";
 
 export const signup = async (req, res) => {
@@ -30,9 +30,10 @@ export const signup = async (req, res) => {
     });
 
     await newUser.save();
-    generateToken(newUser._id, res);
+    const token = generateToken(newUser._id);
 
     res.status(201).json({
+      token,
       _id: newUser._id,
       fullName: newUser.fullName,
       email: newUser.email,
@@ -64,9 +65,10 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    generateToken(user._id, res);
+    const token = generateToken(user._id);
 
     res.status(200).json({
+      token,
       _id: user._id,
       fullName: user.fullName,
       email: user.email,
@@ -82,7 +84,7 @@ export const login = async (req, res) => {
 
 export const logout = (req, res) => {
   try {
-    clearToken(res);
+    // Token is stored client-side; just confirm logout
     res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
     console.error("Logout error:", error.message);

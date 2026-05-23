@@ -12,10 +12,16 @@ export const useAuthStore = create((set, get) => ({
 
   checkAuth: async () => {
     try {
+      const token = localStorage.getItem("chat-token");
+      if (!token) {
+        set({ authUser: null, isCheckingAuth: false });
+        return;
+      }
       const res = await axiosInstance.get("/auth/check");
       set({ authUser: res.data });
       useSocketStore.getState().connectSocket(res.data._id);
     } catch {
+      localStorage.removeItem("chat-token");
       set({ authUser: null });
     } finally {
       set({ isCheckingAuth: false });
@@ -26,6 +32,7 @@ export const useAuthStore = create((set, get) => ({
     set({ isSigningUp: true });
     try {
       const res = await axiosInstance.post("/auth/signup", data);
+      localStorage.setItem("chat-token", res.data.token);
       set({ authUser: res.data });
       useSocketStore.getState().connectSocket(res.data._id);
       toast.success("Account created successfully!");
@@ -40,6 +47,7 @@ export const useAuthStore = create((set, get) => ({
     set({ isLoggingIn: true });
     try {
       const res = await axiosInstance.post("/auth/login", data);
+      localStorage.setItem("chat-token", res.data.token);
       set({ authUser: res.data });
       useSocketStore.getState().connectSocket(res.data._id);
       toast.success(`Welcome back, ${res.data.fullName}!`);
@@ -53,11 +61,13 @@ export const useAuthStore = create((set, get) => ({
   logout: async () => {
     try {
       await axiosInstance.post("/auth/logout");
+    } catch {
+      // ignore logout API errors
+    } finally {
+      localStorage.removeItem("chat-token");
       useSocketStore.getState().disconnectSocket();
       set({ authUser: null });
       toast.success("Logged out successfully");
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Logout failed");
     }
   },
 
