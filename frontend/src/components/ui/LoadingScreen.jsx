@@ -26,7 +26,7 @@ const LoadingScreen = () => {
             />
           ))}
         </div>
-        <p className="text-slate-400 text-sm">Loading ChatFlow...</p>
+        <p className="text-slate-400 text-sm">Loading Ethio Chat...</p>
       </motion.div>
     </div>
   );

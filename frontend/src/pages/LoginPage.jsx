@@ -26,7 +26,7 @@ const LoginPage = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-600 to-violet-600 shadow-lg shadow-primary-500/30 mb-4">
             <MessageSquare className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gradient">ChatFlow</h1>
+          <h1 className="text-3xl font-bold text-gradient">Ethio Chat</h1>
           <p className="text-slate-400 mt-1">Welcome back</p>
         </motion.div>
 
