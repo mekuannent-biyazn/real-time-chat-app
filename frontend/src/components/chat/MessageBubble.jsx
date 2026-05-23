@@ -11,6 +11,7 @@ const MessageBubble = ({ message, isOwn, showAvatar }) => {
   const [showActions, setShowActions] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const pickerRef = useRef(null);
+  const longPressTimer = useRef(null);
 
   const sender = message.senderId;
   const avatarGradient = generateAvatarColor(sender?.fullName);
@@ -18,6 +19,17 @@ const MessageBubble = ({ message, isOwn, showAvatar }) => {
   const handleReaction = (emoji) => {
     addReaction(message._id, emoji.native);
     setShowEmojiPicker(false);
+    setShowActions(false);
+  };
+
+  // Long-press for mobile to show actions
+  const handleTouchStart = () => {
+    longPressTimer.current = setTimeout(() => {
+      setShowActions(true);
+    }, 500);
+  };
+  const handleTouchEnd = () => {
+    clearTimeout(longPressTimer.current);
   };
 
   // Group reactions
@@ -30,19 +42,25 @@ const MessageBubble = ({ message, isOwn, showAvatar }) => {
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`flex items-end gap-2 mb-1 group ${isOwn ? "flex-row-reverse" : ""}`}
+      className={`flex items-end gap-1.5 md:gap-2 mb-1 group ${isOwn ? "flex-row-reverse" : ""}`}
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => {
         setShowActions(false);
         setShowEmojiPicker(false);
       }}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
       {/* Avatar */}
-      <div className="w-8 flex-shrink-0">
+      <div className="w-7 md:w-8 flex-shrink-0">
         {!isOwn && showAvatar && (
-          <div className="w-8 h-8 rounded-xl overflow-hidden">
+          <div className="w-7 h-7 md:w-8 md:h-8 rounded-xl overflow-hidden">
             {sender?.profilePic ? (
-              <img src={sender.profilePic} alt={sender.fullName} className="w-full h-full object-cover" />
+              <img
+                src={sender.profilePic}
+                alt={sender.fullName}
+                className="w-full h-full object-cover"
+              />
             ) : (
               <div
                 className={`w-full h-full bg-gradient-to-br ${avatarGradient} flex items-center justify-center text-xs font-bold text-white`}
@@ -55,8 +73,10 @@ const MessageBubble = ({ message, isOwn, showAvatar }) => {
       </div>
 
       {/* Bubble + actions */}
-      <div className={`flex flex-col ${isOwn ? "items-end" : "items-start"} max-w-[70%]`}>
-        {/* Actions */}
+      <div
+        className={`flex flex-col ${isOwn ? "items-end" : "items-start"} max-w-[80%] md:max-w-[70%]`}
+      >
+        {/* Actions — shown on hover (desktop) or long-press (mobile) */}
         <AnimatePresence>
           {showActions && (
             <motion.div
@@ -75,7 +95,9 @@ const MessageBubble = ({ message, isOwn, showAvatar }) => {
                 {showEmojiPicker && (
                   <div
                     ref={pickerRef}
-                    className={`absolute z-50 bottom-8 ${isOwn ? "right-0" : "left-0"}`}
+                    className={`fixed md:absolute z-50 bottom-20 md:bottom-8 left-1/2 md:left-auto -translate-x-1/2 md:translate-x-0 ${
+                      isOwn ? "md:right-0" : "md:left-0"
+                    }`}
                   >
                     <Picker
                       data={data}
@@ -119,9 +141,7 @@ const MessageBubble = ({ message, isOwn, showAvatar }) => {
             } text-right`}
           >
             {formatMessageTime(message.createdAt)}
-            {isOwn && (
-              <span className="ml-1">{message.isRead ? "✓✓" : "✓"}</span>
-            )}
+            {isOwn && <span className="ml-1">{message.isRead ? "✓✓" : "✓"}</span>}
           </p>
         </div>
 

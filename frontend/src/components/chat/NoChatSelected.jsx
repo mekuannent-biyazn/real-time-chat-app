@@ -9,7 +9,7 @@ const features = [
 
 const NoChatSelected = () => {
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-8 bg-dark-950/50">
+    <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-8 bg-dark-950/50">
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}

@@ -65,7 +65,7 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className="w-80 flex-shrink-0 flex flex-col h-screen border-r border-white/5 bg-dark-900/50 backdrop-blur-xl">
+    <aside className="w-full md:w-80 flex-shrink-0 flex flex-col h-screen border-r border-white/5 bg-dark-900/50 backdrop-blur-xl">
       {/* Header */}
       <div className="p-4 border-b border-white/5">
         <div className="flex items-center justify-between mb-4">
@@ -168,7 +168,10 @@ const Sidebar = () => {
 
       {/* Current User Footer */}
       <div className="p-3 border-t border-white/5">
-        <Link to="/profile" className="flex items-center gap-3 p-2 rounded-xl hover:bg-white/5 transition-all group">
+        <Link
+          to="/profile"
+          className="flex items-center gap-3 p-2 rounded-xl hover:bg-white/5 transition-all group"
+        >
           <div className="relative flex-shrink-0">
             {authUser?.profilePic ? (
               <img

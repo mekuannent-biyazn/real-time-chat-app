@@ -67,7 +67,7 @@ const ChatWindow = () => {
       <div
         ref={containerRef}
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto px-4 py-4 space-y-1"
+        className="flex-1 overflow-y-auto px-2 md:px-4 py-4 space-y-1"
       >
         {isMessagesLoading ? (
           <div className="flex flex-col gap-4 p-4">
@@ -144,7 +144,7 @@ const ChatWindow = () => {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
             onClick={scrollToBottom}
-            className="absolute bottom-24 right-6 w-10 h-10 bg-primary-600 hover:bg-primary-500 rounded-full shadow-lg flex items-center justify-center text-white transition-colors"
+            className="absolute bottom-20 md:bottom-24 right-4 md:right-6 w-9 h-9 md:w-10 md:h-10 bg-primary-600 hover:bg-primary-500 rounded-full shadow-lg flex items-center justify-center text-white transition-colors z-10"
           >
             ↓
           </motion.button>

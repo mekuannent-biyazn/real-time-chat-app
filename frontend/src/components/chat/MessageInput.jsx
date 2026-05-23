@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Paperclip, Smile, X, Image } from "lucide-react";
+import { Send, Smile, X, Image } from "lucide-react";
 import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
 import { useChatStore } from "../../store/useChatStore.js";
@@ -64,14 +64,15 @@ const MessageInput = () => {
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    // On mobile (touch devices) don't submit on Enter — let them use the send button
+    if (e.key === "Enter" && !e.shiftKey && window.innerWidth >= 768) {
       e.preventDefault();
       handleSubmit(e);
     }
   };
 
   return (
-    <div className="px-4 py-3 border-t border-white/5 bg-dark-900/50 backdrop-blur-xl">
+    <div className="px-3 md:px-4 py-3 border-t border-white/5 bg-dark-900/50 backdrop-blur-xl">
       {/* Image preview */}
       <AnimatePresence>
         {imagePreview && (
@@ -85,7 +86,7 @@ const MessageInput = () => {
               <img
                 src={imagePreview}
                 alt="Preview"
-                className="h-24 w-auto rounded-xl object-cover border border-white/10"
+                className="h-20 md:h-24 w-auto rounded-xl object-cover border border-white/10"
               />
               <button
                 onClick={removeImage}
@@ -98,13 +99,13 @@ const MessageInput = () => {
         )}
       </AnimatePresence>
 
-      <form onSubmit={handleSubmit} className="flex items-end gap-2">
+      <form onSubmit={handleSubmit} className="flex items-end gap-1.5 md:gap-2">
         {/* Emoji picker */}
         <div className="relative">
           <button
             type="button"
             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-            className="btn-ghost p-2.5 flex-shrink-0"
+            className="btn-ghost p-2 md:p-2.5 flex-shrink-0"
           >
             <Smile className="w-5 h-5" />
           </button>
@@ -114,7 +115,8 @@ const MessageInput = () => {
                 initial={{ opacity: 0, scale: 0.9, y: 10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                className="absolute bottom-12 left-0 z-50"
+                // On mobile: fixed centered overlay; on desktop: absolute above button
+                className="fixed md:absolute bottom-20 md:bottom-12 left-1/2 md:left-0 -translate-x-1/2 md:translate-x-0 z-50"
               >
                 <Picker
                   data={data}
@@ -137,7 +139,7 @@ const MessageInput = () => {
               handleTyping();
             }}
             onKeyDown={handleKeyDown}
-            placeholder="Type a message... (Enter to send)"
+            placeholder="Type a message..."
             rows={1}
             className="glass-input w-full resize-none py-2.5 pr-4 text-sm leading-relaxed max-h-32 overflow-y-auto"
             style={{ minHeight: "44px" }}
@@ -148,7 +150,7 @@ const MessageInput = () => {
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="btn-ghost p-2.5 flex-shrink-0"
+          className="btn-ghost p-2 md:p-2.5 flex-shrink-0"
         >
           <Image className="w-5 h-5" />
         </button>
@@ -164,7 +166,7 @@ const MessageInput = () => {
         <button
           type="submit"
           disabled={(!text.trim() && !imagePreview) || isSending}
-          className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl flex items-center justify-center transition-all shadow-lg shadow-primary-500/20 hover:scale-105 active:scale-95"
+          className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl flex items-center justify-center transition-all shadow-lg shadow-primary-500/20 active:scale-95"
         >
           <Send className="w-4 h-4 text-white" />
         </button>
