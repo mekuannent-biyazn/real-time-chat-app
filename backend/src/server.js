@@ -20,12 +20,22 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
 
 // ✅ FIXED CORS (Production + Local safe)
+const allowedOrigins = [
+  "http://localhost:5173",
+  /^https:\/\/.*\.vercel\.app$/,  // allow all *.vercel.app subdomains
+];
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://real-time-chat-app-demo.vercel.app"
-    ],
+    origin: (origin, callback) => {
+      // allow requests with no origin (mobile apps, curl, Render health checks)
+      if (!origin) return callback(null, true);
+      const isAllowed = allowedOrigins.some((o) =>
+        typeof o === "string" ? o === origin : o.test(origin)
+      );
+      if (isAllowed) return callback(null, true);
+      return callback(new Error(`CORS blocked: ${origin}`));
+    },
     credentials: true,
   })
 );
