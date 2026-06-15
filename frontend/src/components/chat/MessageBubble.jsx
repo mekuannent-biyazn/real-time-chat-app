@@ -1,10 +1,27 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Trash2, Smile } from "lucide-react";
+import { Trash2, Smile, Download, FileText, Film, Music, Archive } from "lucide-react";
 import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
 import { useChatStore } from "../../store/useChatStore.js";
 import { formatMessageTime, getInitials, generateAvatarColor } from "../../lib/utils.js";
+
+const FileIcon = ({ mimeType, className = "w-5 h-5" }) => {
+  if (!mimeType) return <FileText className={className} />;
+  if (mimeType.startsWith("video/"))  return <Film     className={className} />;
+  if (mimeType.startsWith("audio/"))  return <Music    className={className} />;
+  if (mimeType.includes("pdf"))       return <FileText className={className} />;
+  if (mimeType.includes("zip") || mimeType.includes("rar") || mimeType.includes("7z"))
+                                      return <Archive  className={className} />;
+  return <FileText className={className} />;
+};
+
+const formatBytes = (bytes) => {
+  if (!bytes) return "";
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+};
 
 const MessageBubble = ({ message, isOwn, showAvatar }) => {
   const { deleteMessage, addReaction } = useChatStore();
@@ -131,6 +148,31 @@ const MessageBubble = ({ message, isOwn, showAvatar }) => {
               className="rounded-xl max-w-full mb-2 cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => window.open(message.image, "_blank")}
             />
+          )}
+          {message.file && (
+            <a
+              href={message.file}
+              target="_blank"
+              rel="noopener noreferrer"
+              download={message.fileName || true}
+              className="flex items-center gap-2.5 mb-2 px-3 py-2.5 rounded-xl border border-white/10 bg-black/20 hover:bg-black/30 transition-colors group/file"
+            >
+              <FileIcon
+                mimeType={message.fileType}
+                className="w-6 h-6 text-primary-400 flex-shrink-0"
+              />
+              <div className="flex flex-col min-w-0 flex-1">
+                <span className="text-xs font-medium text-slate-200 truncate">
+                  {message.fileName || "File"}
+                </span>
+                {message.fileSize > 0 && (
+                  <span className="text-[10px] text-slate-500">
+                    {formatBytes(message.fileSize)}
+                  </span>
+                )}
+              </div>
+              <Download className="w-4 h-4 text-slate-400 group-hover/file:text-primary-400 flex-shrink-0 transition-colors" />
+            </a>
           )}
           {message.text && (
             <p className="text-sm leading-relaxed break-words">{message.text}</p>
