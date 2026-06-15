@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { useSocketStore } from "./useSocketStore.js";
+import { useNotificationStore } from "./useNotificationStore.js";
 import toast from "react-hot-toast";
 
 // Free STUN servers — good enough for most networks
@@ -234,6 +235,18 @@ export const useCallStore = create((set, get) => ({
     }
     // Ensure _id is always set (fallback to `from`)
     const enrichedCallerInfo = { _id: from, ...callerInfo };
+
+    // Push a call notification to the notification center
+    try {
+      useNotificationStore.getState().addNotification({
+        senderId:   enrichedCallerInfo._id,
+        senderName: enrichedCallerInfo.fullName || "Unknown",
+        senderPic:  enrichedCallerInfo.profilePic || "",
+        text:       `📞 Incoming ${callType === "video" ? "video" : "voice"} call`,
+        type:       "call",
+      });
+    } catch (_) { /* non-fatal */ }
+
     set({
       callState: "incoming",
       callType,
