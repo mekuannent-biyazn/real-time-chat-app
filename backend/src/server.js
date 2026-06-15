@@ -15,8 +15,8 @@ dotenv.config();
 const PORT = process.env.PORT || 5001;
 
 // Middleware
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+app.use(express.json({ limit: "25mb" }));
+app.use(express.urlencoded({ extended: true, limit: "25mb" }));
 app.use(cookieParser());
 
 // ✅ FIXED CORS (Production + Local safe)
