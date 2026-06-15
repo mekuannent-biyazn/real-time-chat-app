@@ -142,3 +142,9 @@
 .message-appear {
   animation: messageAppear 0.25s ease-out forwards;
 }
+
+/* ── Call modal ── */
+@keyframes callPulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50%       { opacity: 0;   transform: scale(1.5); }
+}
