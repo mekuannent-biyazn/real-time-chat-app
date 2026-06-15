@@ -20,6 +20,22 @@ const messageSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    file: {
+      type: String,
+      default: "",
+    },
+    fileName: {
+      type: String,
+      default: "",
+    },
+    fileType: {
+      type: String,
+      default: "",
+    },
+    fileSize: {
+      type: Number,
+      default: 0,
+    },
     isRead: {
       type: Boolean,
       default: false,

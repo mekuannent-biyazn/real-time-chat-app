@@ -59,11 +59,11 @@ export const getMessages = async (req, res) => {
 
 export const sendMessage = async (req, res) => {
   try {
-    const { text, image } = req.body;
+    const { text, image, file, fileName, fileType, fileSize } = req.body;
     const { id: receiverId } = req.params;
     const senderId = req.user._id;
 
-    if (!text && !image) {
+    if (!text && !image && !file) {
       return res.status(400).json({ message: "Message cannot be empty" });
     }
 
@@ -76,11 +76,26 @@ export const sendMessage = async (req, res) => {
       imageUrl = uploadResponse.secure_url;
     }
 
+    let fileUrl = "";
+    if (file) {
+      const uploadResponse = await cloudinary.uploader.upload(file, {
+        folder: "chat-app/files",
+        resource_type: "auto",
+        use_filename: true,
+        unique_filename: true,
+      });
+      fileUrl = uploadResponse.secure_url;
+    }
+
     const newMessage = new Message({
       senderId,
       receiverId,
       text: text || "",
       image: imageUrl,
+      file: fileUrl,
+      fileName: fileName || "",
+      fileType: fileType || "",
+      fileSize: fileSize || 0,
     });
 
     await newMessage.save();
