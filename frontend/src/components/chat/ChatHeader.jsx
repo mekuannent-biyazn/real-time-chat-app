@@ -1,10 +1,24 @@
 import { X, Phone, Video, ArrowLeft } from "lucide-react";
 import { useChatStore } from "../../store/useChatStore.js";
+import { useCallStore } from "../../store/useCallStore.js";
 import { getInitials, generateAvatarColor } from "../../lib/utils.js";
 
 const ChatHeader = ({ user, isOnline }) => {
   const { setSelectedUser } = useChatStore();
+  const { startCall, callState } = useCallStore();
   const avatarGradient = generateAvatarColor(user?.fullName);
+
+  const isBusy = callState !== "idle";
+
+  const handleVoiceCall = () => {
+    if (!user || isBusy) return;
+    startCall(user, "audio");
+  };
+
+  const handleVideoCall = () => {
+    if (!user || isBusy) return;
+    startCall(user, "video");
+  };
 
   return (
     <header className="flex items-center justify-between px-3 md:px-4 py-3 border-b border-white/5 bg-dark-900/50 backdrop-blur-xl">
@@ -47,12 +61,32 @@ const ChatHeader = ({ user, isOnline }) => {
 
       {/* Actions */}
       <div className="flex items-center gap-0.5 md:gap-1">
-        <button className="btn-ghost p-2 text-slate-400" title="Voice call (coming soon)">
+        <button
+          onClick={handleVoiceCall}
+          disabled={isBusy}
+          title="Voice call"
+          className={`btn-ghost p-2 transition-colors ${
+            isBusy
+              ? "text-slate-600 cursor-not-allowed"
+              : "text-slate-400 hover:text-emerald-400"
+          }`}
+        >
           <Phone className="w-4 h-4" />
         </button>
-        <button className="btn-ghost p-2 text-slate-400" title="Video call (coming soon)">
+
+        <button
+          onClick={handleVideoCall}
+          disabled={isBusy}
+          title="Video call"
+          className={`btn-ghost p-2 transition-colors ${
+            isBusy
+              ? "text-slate-600 cursor-not-allowed"
+              : "text-slate-400 hover:text-primary-400"
+          }`}
+        >
           <Video className="w-4 h-4" />
         </button>
+
         {/* Close button — desktop only */}
         <button
           onClick={() => setSelectedUser(null)}
