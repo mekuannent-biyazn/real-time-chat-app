@@ -108,6 +108,24 @@ export const sendMessage = async (req, res) => {
     const receiverSocketId = getReceiverSocketId(receiverId);
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("newMessage", populatedMessage);
+
+      // Determine notification type and preview text
+      const notifType = imageUrl ? "image" : fileUrl ? "file" : "message";
+      const notifText = imageUrl
+        ? "📷 Photo"
+        : fileUrl
+        ? `📎 ${fileName || "File"}`
+        : text?.slice(0, 80) || "";
+
+      io.to(receiverSocketId).emit("notification:new", {
+        senderId:   populatedMessage.senderId._id.toString(),
+        senderName: populatedMessage.senderId.fullName,
+        senderPic:  populatedMessage.senderId.profilePic || "",
+        text:       notifText,
+        type:       notifType,
+        messageId:  newMessage._id.toString(),
+        timestamp:  new Date(),
+      });
     }
 
     res.status(201).json(populatedMessage);
