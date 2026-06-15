@@ -3,19 +3,31 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
 import { useAuthStore } from "./store/useAuthStore.js";
+import { useCallStore } from "./store/useCallStore.js";
+import { useSocketStore } from "./store/useSocketStore.js";
 
 import HomePage from "./pages/HomePage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import SignupPage from "./pages/SignupPage.jsx";
 import ProfilePage from "./pages/ProfilePage.jsx";
 import LoadingScreen from "./components/ui/LoadingScreen.jsx";
+import CallModal from "./components/call/CallModal.jsx";
 
 const App = () => {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+  const { subscribeToCallEvents, unsubscribeFromCallEvents } = useCallStore();
+  const { socket } = useSocketStore();
 
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
+
+  // Register call socket listeners whenever the socket becomes available
+  useEffect(() => {
+    if (!socket) return;
+    subscribeToCallEvents();
+    return () => unsubscribeFromCallEvents();
+  }, [socket, subscribeToCallEvents, unsubscribeFromCallEvents]);
 
   if (isCheckingAuth) return <LoadingScreen />;
 
@@ -39,6 +51,9 @@ const App = () => {
           element={authUser ? <ProfilePage /> : <Navigate to="/login" replace />}
         />
       </Routes>
+
+      {/* Global call overlay — renders on top of everything */}
+      <CallModal />
 
       <Toaster
         position="top-right"
