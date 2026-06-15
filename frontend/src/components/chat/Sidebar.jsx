@@ -13,7 +13,9 @@ import {
 import { useChatStore } from "../../store/useChatStore.js";
 import { useAuthStore } from "../../store/useAuthStore.js";
 import { useSocketStore } from "../../store/useSocketStore.js";
+import { useNotificationStore } from "../../store/useNotificationStore.js";
 import UserListItem from "./UserListItem.jsx";
+import NotificationCenter from "../ui/NotificationCenter.jsx";
 import axiosInstance from "../../lib/axios.js";
 
 const Sidebar = () => {
@@ -21,6 +23,7 @@ const Sidebar = () => {
     useChatStore();
   const { authUser, logout } = useAuthStore();
   const { onlineUsers } = useSocketStore();
+  const { markAllReadFromSender } = useNotificationStore();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -61,6 +64,7 @@ const Sidebar = () => {
   const handleSelectUser = (user) => {
     setSelectedUser(user);
     clearUnreadCount(user._id);
+    markAllReadFromSender(user._id);
     setSearchQuery("");
   };
 
@@ -76,6 +80,7 @@ const Sidebar = () => {
             <span className="font-bold text-lg text-slate-100">Ethio Chat</span>
           </div>
           <div className="flex items-center gap-1">
+            <NotificationCenter />
             <Link to="/profile" className="btn-ghost p-2">
               <Settings className="w-4 h-4" />
             </Link>
